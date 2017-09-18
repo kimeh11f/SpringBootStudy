@@ -17,6 +17,12 @@ public class AccountService {
     private ModelMapper modelMapper;
     public Account createAccount(AccountDto.Create dto) {
         Account account = modelMapper.map(dto, Account.class);
+        // TODO 유효한 username인지 판단
+        String username = dto.getUsername();
+        if(repository.findByUsername(username) != null){
+            throw new UserDuplicatedException(username);
+        }
+        // TODO 패스워드 해싱
         Date now = new Date();
         account.setJoined(now);
         account.setUpdated(now);
