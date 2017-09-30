@@ -28,12 +28,12 @@ public class AccountController {
     @Autowired
     private ModelMapper modelMapper;
 
-
+/*
     @RequestMapping("/")
     public String hello() {
         return "Hello Spring Boot";
     }
-
+*/
     @RequestMapping(value = "/accounts", method = POST)
     public ResponseEntity createAccount(@RequestBody @Valid AccountDto.Create create,
                                         BindingResult result) {
@@ -102,6 +102,10 @@ public class AccountController {
         //TODO UPDATE
     }
 
-
+    @RequestMapping(value = "/accounts/{id}", method = DELETE)
+    public ResponseEntity deleteAccount(@PathVariable Long id){
+        service.deleteAccount(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }

@@ -20,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -137,5 +135,12 @@ public class AccountControllerTest {
         createDto.setUsername("whiteShip");
         createDto.setUsername("password");
         return createDto;
+    }
+
+    @Test
+    public void zdeleteAccount() throws Exception {
+        ResultActions result = mockMvc.perform(delete("/accounts/1"));
+        result.andDo(print());
+        result.andExpect(status().isNoContent());
     }
 }
