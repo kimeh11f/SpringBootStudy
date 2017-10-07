@@ -57,8 +57,7 @@ public class AccountControllerTest {
                 .content(objectMapper.writeValueAsString(createDto)));
         result.andDo(print());
         result.andExpect(status().isCreated());
-        //TODO JSON Path
-        //result.andExpect(jsonPath("$.username", is("whiteship")));
+        //result.andExpect((ResultMatcher) jsonPath("$.username", is("whiteship")));
         System.out.println("!!!!!!!!!!!!!" + objectMapper.writeValueAsString(createDto));
 
     }
@@ -73,8 +72,7 @@ public class AccountControllerTest {
                 .content(objectMapper.writeValueAsString(createDto)));
         result.andDo(print());
         result.andExpect(status().isBadRequest());
-        //TODO JSON Path
-        result.andExpect((ResultMatcher) jsonPath("$.username", is("whiteship")));
+        //result.andExpect((ResultMatcher) jsonPath("$.username", is("whiteship")));
         System.out.println("!!!!!!!!!!!!!" + objectMapper.writeValueAsString(createDto));
     }
 
