@@ -98,8 +98,6 @@ public class AccountController {
         Account updateAccount = service.updateAccount(id, updateDto);
         return new ResponseEntity<>(modelMapper.map(updateAccount, AccountDto.Response.class)
                 , HttpStatus.OK);
-
-        //TODO UPDATE
     }
 
     @RequestMapping(value = "/accounts/{id}", method = DELETE)
