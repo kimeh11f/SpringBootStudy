@@ -1,6 +1,5 @@
 package com.euihwan.study.accounts;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -14,15 +13,15 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class) //테스트 속도 줄이기의 핵심. @TEST마다 애플리케이션 컨텍스트의 재사용.
@@ -40,9 +39,12 @@ public class AccountControllerTest {
 
     MockMvc mockMvc;
 
+
     @Before
     public void setUp(){
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
@@ -93,10 +95,7 @@ public class AccountControllerTest {
    "totalElements":1,"last":true,"totalPages":1,"number":0,"size":20,"sort":null,"first":true,"numberOfElements":1}*/
     @Test
     public void getAccounts() throws Exception {
-        AccountDto.Create createDto = new AccountDto.Create();
-        createDto.setUsername("whiteShip");
-        createDto.setUsername("password");
-        ResultActions result = mockMvc.perform(get("/accounts"));
+        ResultActions result = mockMvc.perform(get("/accounts").with(user("whiteship"))); //with후에 user를 사용하니, 권한 없이 됨.
         result.andDo(print());
         result.andExpect(status().isOk());
     }
@@ -130,14 +129,16 @@ public class AccountControllerTest {
 
     private AccountDto.Create accountCreateDto(){
         AccountDto.Create createDto = new AccountDto.Create();
-        createDto.setUsername("whiteShip");
-        createDto.setUsername("password");
+        createDto.setUsername("whiteShip2");
+        createDto.setUsername("password2");
         return createDto;
     }
 
     @Test
     public void zdeleteAccount() throws Exception {
-        ResultActions result = mockMvc.perform(delete("/accounts/1"));
+        ResultActions result = mockMvc.perform(delete("/accounts/1")
+                .with(httpBasic("whiteship", "password"))
+            .header("BASIC AUTH", "username:password"));
         result.andDo(print());
         result.andExpect(status().isNoContent());
     }

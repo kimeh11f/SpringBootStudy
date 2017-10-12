@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,17 +21,22 @@ public class AccountService {
     private AccountRepository repository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private ModelMapper modelMapper;
     public Account createAccount(AccountDto.Create dto) {
         Account account = modelMapper.map(dto, Account.class);
-        // TODO 유효한 username인지 판단
+        //유효한 username인지 판단
         String username = dto.getUsername();
         if(repository.findByUsername(username) != null){
             log.error("user duplicated exception. {}", username);
             throw new UserDuplicatedException(username);
         }
 
-        // TODO 패스워드 해싱
+        //패스워드 해싱
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
         Date now = new Date();
         account.setJoined(now);
         account.setUpdated(now);
@@ -41,7 +47,7 @@ public class AccountService {
 
     public Account updateAccount(Long id, AccountDto.Update updateDto) {
         Account account = getAccount(id);
-        account.setPassword(updateDto.getPassword());
+        account.setPassword(passwordEncoder.encode(updateDto.getPassword()));
         account.setFullName(updateDto.getFullName());
         return repository.save(account);
     }
